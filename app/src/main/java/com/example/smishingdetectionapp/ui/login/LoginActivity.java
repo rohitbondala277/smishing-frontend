@@ -35,6 +35,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.example.smishingdetectionapp.DataBase.LoginResponse;
+import com.example.smishingdetectionapp.DataBase.Retrofitinterface;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -50,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
     private ActivityLoginBinding binding;
     private Retrofit retrofit;
     private Retrofitinterface retrofitinterface;
-    private String BASE_URL = BuildConfig.SERVERIP;
+    private String BASE_URL = "https://smishing-backend-1004745454775.australia-southeast1.run.app/"; // this api need to change , currently its using testing one
     private boolean isPasswordVisible = false;
 
     GoogleSignInOptions gso;
@@ -291,63 +293,60 @@ public class LoginActivity extends AppCompatActivity {
      */
 
     private void loginWithPin(String pin) {
-        // For testing purposes, simulate a successful PIN login
-        Toast.makeText(LoginActivity.this, "PIN verified successfully (bypassed for testing)", Toast.LENGTH_SHORT).show();
-        navigateToMainActivity();
-    }
-
-
-    /*
-    private void loginWithPassword(String email, String password) {
-        DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
-        databaseAccess.open();
-
-        boolean isValid = databaseAccess.validateLogin(email, password);
-
-        if (isValid) {
-            navigateToMainActivity();
-        } else {
-            Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_LONG).show();
+        String email = binding.email.getText().toString();
+        if (email.isEmpty()) {
+            Toast.makeText(this, "Please enter your email", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        databaseAccess.close();
-    }
-
-     */
-
-    private void loginWithPassword(String email, String password) {
-        // For testing purposes, simulate a successful login
-        Toast.makeText(LoginActivity.this, "Login successful (bypassed for testing)", Toast.LENGTH_SHORT).show();
-        navigateToMainActivity();
-    }
-
-
-    private void handleLoginDialog() {
-        final EditText usernameEditText = binding.email;
-        final EditText passwordEditText = binding.password;
-
         HashMap<String, String> map = new HashMap<>();
-        map.put("email", usernameEditText.getText().toString());
-        map.put("password", passwordEditText.getText().toString());
+        map.put("email", email);
+        map.put("pin", pin);
 
-        Call<DBresult> call = retrofitinterface.executeLogin(map);
-        call.enqueue(new Callback<DBresult>() {
+        Call<LoginResponse> call = retrofitinterface.login(map);
+        call.enqueue(new Callback<LoginResponse>() {
             @Override
-            public void onResponse(Call<DBresult> call, Response<DBresult> response) {
-                if (response.code() == 200) {
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
                     navigateToMainActivity();
-                } else if (response.code() == 404) {
-                    Toast.makeText(LoginActivity.this, "Wrong Credentials", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Invalid email or PIN", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<DBresult> call, Throwable throwable) {
-                Toast.makeText(LoginActivity.this, throwable.getMessage(), Toast.LENGTH_LONG).show();
-                navigateToMainActivity();
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
+
+    private void loginWithPassword(String email, String password) {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("email", email);
+        map.put("password", password);
+
+        Call<LoginResponse> call = retrofitinterface.login(map);
+        call.enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+                    navigateToMainActivity();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
 
     private boolean isUserLoggedIn() {
         // Placeholder for checking login state
