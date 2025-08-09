@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.smishingdetectionapp.ui.login.LoginActivity;
+import android.content.Context;
+import android.content.res.Configuration;
 
 <<<<<<< Updated upstream
 =======
@@ -34,6 +36,9 @@ public abstract class SharedActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isBold = prefs.getBoolean("bold_text_enabled", false);
+        setTheme(isBold ? R.style.Theme_SmishingDetectionApp_Bold : R.style.Theme_SmishingDetectionApp);
         super.onCreate(savedInstanceState);
         setupSessionTimeout();
     }
