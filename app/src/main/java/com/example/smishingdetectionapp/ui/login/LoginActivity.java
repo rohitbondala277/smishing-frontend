@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
-//import android.text.method.HideReturnsTransformationMethod;
-//import android.text.method.PasswordTransformationMethod;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -16,27 +13,16 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.smishingdetectionapp.BuildConfig;
-import com.example.smishingdetectionapp.DataBase.DBresult;
-import com.example.smishingdetectionapp.DataBase.Retrofitinterface;
 import com.example.smishingdetectionapp.MainActivity;
 import com.example.smishingdetectionapp.R;
-import com.example.smishingdetectionapp.SharedActivity;
 import com.example.smishingdetectionapp.databinding.ActivityLoginBinding;
-import com.example.smishingdetectionapp.detections.DatabaseAccess;
-import com.example.smishingdetectionapp.ui.Register.RegisterMain;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
 import com.example.smishingdetectionapp.DataBase.LoginResponse;
 import com.example.smishingdetectionapp.DataBase.Retrofitinterface;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,324 +30,164 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import java.util.HashMap;
-
 public class LoginActivity extends AppCompatActivity {
 
-    private LoginViewModel loginViewModel;
-    private ActivityLoginBinding binding;
-    private Retrofit retrofit;
-    private Retrofitinterface retrofitinterface;
-    private String BASE_URL = "https://smishing-backend-1004745454775.australia-southeast1.run.app/"; // this api need to change , currently its using testing one
-    private boolean isPasswordVisible = false;
+    // 1) Base URL: emulator -> your local backend
+    private static final String BASE_URL = "https://smishing-backend-1004745454775.australia-southeast1.run.app/";
 
-    GoogleSignInOptions gso;
-    GoogleSignInClient gsc;
-    private boolean isPinLogin = false;  // Flag for PIN login
+    private ActivityLoginBinding binding;
+    private Retrofitinterface api;
+    private boolean isPinLogin = false;
+    private boolean isPasswordVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Inflate layout
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Initialize Retrofit
-        retrofit = new Retrofit.Builder()
+        // 2) Retrofit client
+        Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        retrofitinterface = retrofit.create(Retrofitinterface.class);
+        api = retrofit.create(Retrofitinterface.class);
 
-        // Check if user is already logged in
+        // If you already persist login somewhere, check here
         if (isUserLoggedIn()) {
             navigateToMainActivity();
             return;
         }
 
-        // ViewModel setup
-        loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
-                .get(LoginViewModel.class);
+        // View refs (these IDs match your XML)
+        final EditText emailEt = binding.email;
+        final EditText secretEt = binding.password; // password or PIN depending on mode
+        final Button loginBtn = binding.loginButton;
+        final Button togglePinBtn = binding.togglePinLogin;
+        final Button registerBtn = binding.registerButton;
+        final ImageButton togglePwIcon = binding.togglePasswordVisibility;
+        final ProgressBar progress = binding.progressbar;
 
-        // View bindings
-        final EditText usernameEditText = binding.email;
-        final EditText passwordEditText = binding.password;
-        final Button loginButton = binding.loginButton;
-        final ProgressBar loadingProgressBar = binding.progressbar;
-        final SignInButton googleBtn = binding.googleBtn;
-        final Button registerButton = binding.registerButton;
-        final ImageButton togglePasswordVisibility = binding.togglePasswordVisibility;
-        final Button togglePinLogin = binding.togglePinLogin;  // Added missing reference for togglePinLogin button
-
-        // Toggle functionality for PIN and Password login
-        togglePinLogin.setOnClickListener(v -> {
-            passwordEditText.setText("");
-
-
+        // Toggle Password/PIN mode
+        togglePinBtn.setOnClickListener(v -> {
+            secretEt.setText("");
             if (isPinLogin) {
-                // Switch to password login
-                passwordEditText.setHint("Password");
-                passwordEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                loginButton.setText("Login");
-                togglePinLogin.setText("Login with PIN");
+                // Switch to password
                 isPinLogin = false;
+                secretEt.setHint(R.string.prompt_password);
+                secretEt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                togglePinBtn.setText(R.string.login_with_pin);
+                loginBtn.setText(R.string.action_login_in);
             } else {
-                // Switch to PIN login
-                passwordEditText.setHint("Enter 6-digit PIN");
-                passwordEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
-                loginButton.setText("Login with PIN");
-                togglePinLogin.setText("Login with Password");
+                // Switch to PIN
                 isPinLogin = true;
+                secretEt.setHint("Enter 6-digit PIN");
+                secretEt.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+                togglePinBtn.setText(R.string.login_with_password);
+                loginBtn.setText("Login with PIN");
             }
-            passwordEditText.requestFocus();
+            secretEt.requestFocus();
         });
 
-        // Handle login button click
-        loginButton.setOnClickListener(v -> {
-            String input = passwordEditText.getText().toString();
-            if (isPinLogin) {
-                // Handle PIN login
-                if (input.length() != 6) {
-                    passwordEditText.setError("PIN must be 6 digits");
-                    return;
-                }
-                loginWithPin(input);
-            } else {
-                // Handle password login
-                String email = usernameEditText.getText().toString();
-                if (email.isEmpty() || input.isEmpty()) {
-                    Toast.makeText(LoginActivity.this, "Email and Password must not be empty", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                loginWithPassword(email, input);
-            }
-        });
-
-        // Handle register button click
-        registerButton.setOnClickListener(v -> {
-            startActivity(new Intent(this, RegisterMain.class));
-            finish();
-        });
-
-        // Handle Google Sign-In setup
-        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        gsc = GoogleSignIn.getClient(this, gso);
-
-        // Sign out of Google account to allow fresh authentication
-        gsc.signOut().addOnCompleteListener(task -> {
-            Toast.makeText(this, "Signed out. Ready for fresh authentication.", Toast.LENGTH_SHORT).show();
-        });
-
-        // Handle Google Sign-In button click
-        googleBtn.setOnClickListener(v -> {
-            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
-            if (acct != null) {
-                signOutGoogle(() -> signInGoogle());
-            } else {
-                signInGoogle();
-            }
-        });
-
-        // Observe LoginFormState
-        loginViewModel.getLoginFormState().observe(this, loginFormState -> {
-            if (loginFormState == null) return;
-            loginButton.setEnabled(loginFormState.isDataValid());
-            if (loginFormState.getUsernameError() != null) {
-                usernameEditText.setError(getString(loginFormState.getUsernameError()));
-            }
-            if (loginFormState.getPasswordError() != null) {
-                passwordEditText.setError(getString(loginFormState.getPasswordError()));
-            }
-        });
-
-        loginViewModel.getLoginResult().observe(this, new Observer<LoginResult>() {
-            @Override
-            public void onChanged(@Nullable LoginResult loginResult) {
-                if (loginResult == null) {
-                    return;
-                }
-                loadingProgressBar.setVisibility(View.GONE);
-                if (loginResult.getError() != null) {
-                    showLoginFailed(loginResult.getError());
-                }
-                if (loginResult.getSuccess() != null) {
-                    updateUiWithUser(loginResult.getSuccess());
-                }
-                setResult(Activity.RESULT_OK);
-                finish();
-            }
-        });
-
-
-        /*
-        // Password visibility toggle
-        togglePasswordVisibility.setOnClickListener(v -> {
-            // Check the current input type to determine if the password is visible
-            int currentInputType = passwordEditText.getInputType();
-
-            if (currentInputType == (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
-                // If the password is currently hidden (password transformation is applied), show the password
-                passwordEditText.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD); // Show the password
-                togglePasswordVisibility.setImageResource(R.drawable.visibility);  // Open eye icon
-            } else {
-                // If the password is currently visible, hide the password
-                passwordEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD); // Hide the password
-                togglePasswordVisibility.setImageResource(R.drawable.visibilityoff);  // Closed eye icon
-            }
-
-            // Move the cursor to the end
-            passwordEditText.setSelection(passwordEditText.getText().length());
-        });
-
-    }*/
-
-        togglePasswordVisibility.setOnClickListener(v -> {
+        // Toggle password visibility (in password mode only)
+        togglePwIcon.setOnClickListener(v -> {
+            if (isPinLogin) return; // ignore in PIN mode
             if (isPasswordVisible) {
-                // Hide password
-                passwordEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                togglePasswordVisibility.setImageResource(R.drawable.visibilityoff); // lighter icon
+                secretEt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                togglePwIcon.setImageResource(R.drawable.visibilityoff);
                 isPasswordVisible = false;
             } else {
-                // Show password
-                passwordEditText.setInputType(InputType.TYPE_CLASS_TEXT);
-                togglePasswordVisibility.setImageResource(R.drawable.visibility); // darker icon
+                secretEt.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                togglePwIcon.setImageResource(R.drawable.visibility);
                 isPasswordVisible = true;
             }
-
-            // cursor stays at end of input
-            passwordEditText.setSelection(passwordEditText.getText().length());
+            secretEt.setSelection(secretEt.getText().length());
         });
 
+        // Login button
+        loginBtn.setOnClickListener(v -> {
+            String email = emailEt.getText().toString().trim();
+            String secret = secretEt.getText().toString().trim();
 
-    }
-    //
+            if (email.isEmpty()) {
+                emailEt.setError("Email required");
+                return;
+            }
+            if (secret.isEmpty()) {
+                secretEt.setError(isPinLogin ? "PIN required" : "Password required");
+                return;
+            }
+            if (isPinLogin && secret.length() != 6) {
+                secretEt.setError("PIN must be 6 digits");
+                return;
+            }
 
-    // Google Sign-In
-    void signInGoogle() {
-        Intent signInIntent = gsc.getSignInIntent();
-        startActivityForResult(signInIntent, 1000);
-    }
-
-    // Google Sign-Out
-    void signOutGoogle(Runnable onSignOutComplete) {
-        gsc.signOut().addOnCompleteListener(task -> {
-            Toast.makeText(this, "Signed out of Google account.", Toast.LENGTH_SHORT).show();
-            onSignOutComplete.run();
+            progress.setVisibility(ProgressBar.VISIBLE);
+            if (isPinLogin) {
+                loginWithPin(email, secret, progress);
+            } else {
+                loginWithPassword(email, secret, progress);
+            }
         });
-    }
 
-    // Handle the result of the Google Sign-In
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1000) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                task.getResult(ApiException.class);
-                navigateToMainActivity();
-            } catch (ApiException e) {
-                Toast.makeText(getApplicationContext(), "Authentication failed", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    /*
-    private void loginWithPin(String pin) {
-        // Open the database
-        DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
-        databaseAccess.open();
-
-        // Validate the PIN
-        boolean isValid = databaseAccess.validatePin(pin);
-
-        if (isValid) {
-            // PIN is valid
-            Toast.makeText(LoginActivity.this, "PIN verified successfully", Toast.LENGTH_SHORT).show();
-            navigateToMainActivity();
-        } else {
-            // Invalid PIN
-            Toast.makeText(LoginActivity.this, "Invalid PIN. Please try again.", Toast.LENGTH_LONG).show();
-        }
-
-        // Close the database
-        databaseAccess.close();
-    }
-
-     */
-
-    private void loginWithPin(String pin) {
-        String email = binding.email.getText().toString();
-        if (email.isEmpty()) {
-            Toast.makeText(this, "Please enter your email", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        HashMap<String, String> map = new HashMap<>();
-        map.put("email", email);
-        map.put("pin", pin);
-
-        Call<LoginResponse> call = retrofitinterface.login(map);
-        call.enqueue(new Callback<LoginResponse>() {
-            @Override
-            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                    navigateToMainActivity();
-                } else {
-                    Toast.makeText(LoginActivity.this, "Invalid email or PIN", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_LONG).show();
-            }
+        // Optional: navigate to register screen
+        registerBtn.setOnClickListener(v -> {
+            Toast.makeText(this, "Register screen not wired here.", Toast.LENGTH_SHORT).show();
         });
     }
 
-    private void loginWithPassword(String email, String password) {
-        HashMap<String, String> map = new HashMap<>();
-        map.put("email", email);
-        map.put("password", password);
+    private void loginWithPassword(String email, String password, ProgressBar progress) {
+        Map<String, String> body = new HashMap<>();
+        body.put("email", email);
+        body.put("password", password);
 
-        Call<LoginResponse> call = retrofitinterface.login(map);
-        call.enqueue(new Callback<LoginResponse>() {
-            @Override
-            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+        api.loginPassword(body).enqueue(new Callback<LoginResponse>() {
+            @Override public void onResponse(Call<LoginResponse> call, Response<LoginResponse> res) {
+                progress.setVisibility(ProgressBar.GONE);
+                if (res.isSuccessful() && res.body() != null && res.body().isSuccess()) {
                     Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
                     navigateToMainActivity();
                 } else {
                     Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_LONG).show();
                 }
             }
-
-            @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) {
+            @Override public void onFailure(Call<LoginResponse> call, Throwable t) {
+                progress.setVisibility(ProgressBar.GONE);
                 Toast.makeText(LoginActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
+    private void loginWithPin(String email, String pin, ProgressBar progress) {
+        Map<String, String> body = new HashMap<>();
+        body.put("email", email);
+        body.put("pin", pin);
 
+        api.loginPin(body).enqueue(new Callback<LoginResponse>() {
+            @Override public void onResponse(Call<LoginResponse> call, Response<LoginResponse> res) {
+                progress.setVisibility(ProgressBar.GONE);
+                if (res.isSuccessful() && res.body() != null && res.body().isSuccess()) {
+                    Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+                    navigateToMainActivity();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Invalid email or PIN", Toast.LENGTH_LONG).show();
+                }
+            }
+            @Override public void onFailure(Call<LoginResponse> call, Throwable t) {
+                progress.setVisibility(ProgressBar.GONE);
+                Toast.makeText(LoginActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 
     private boolean isUserLoggedIn() {
-        // Placeholder for checking login state
+        // TODO: read a saved token / shared prefs if you want auto-login.
         return false;
     }
 
     private void navigateToMainActivity() {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(LoginActivity.this, MainActivity.class));
         finish();
-    }
-
-    private void updateUiWithUser(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
-        Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {

@@ -9,14 +9,13 @@ import retrofit2.http.POST;
 
 public interface Retrofitinterface {
 
-        // Unified login: send email + (password OR pin)
-        @POST("api/auth/login")
-        Call<LoginResponse> login(@Body Map<String, String> body);
+        @POST("api/auth/login-password")
+        Call<LoginResponse> loginPassword(@Body Map<String, String> body);
 
+        @POST("api/auth/login-pin")
+        Call<LoginResponse> loginPin(@Body Map<String, String> body);
+
+        // ADD THIS so EmailVerify.java can compile:
         @POST("api/auth/signup")
         Call<SignupResponse> executeSignup(@Body HashMap<String, String> map);
-
-        @POST("api/auth/checkemail")
-        Call<SignupResponse> checkEmail(@Body HashMap<String, String> map);
-
 }

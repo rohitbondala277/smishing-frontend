@@ -139,9 +139,6 @@
             android:name=".FeedbackActivity"
             android:exported="false" />
 
-        <activity android:name="Community.CommunityHomeActivity" />
-        <activity android:name="Community.CommunityOpenPost" />
-
 
         <activity
             android:name=".chat.ChatAssistantActivity"

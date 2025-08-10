@@ -383,7 +383,7 @@
     <string name="feedback_history">Feedback History</string>
     <string name="Forums_and_Report">Forums &amp; Report</string>
     <string name="word_count_format">Words: %1$d / %2$d</string>
-    <string name="feedback_success">Feedback submitted successfully!</string>
+
 
     <!-- feedback page  -->
     <string name="enter_name">Your name</string>
@@ -414,19 +414,17 @@
     <string name="options_menu">More options</string>
 
 <string name="feedback_success">Feedback submitted successfully!</string>
-<string name="back_button">Back</string>
+    <string name="login_with_password">Login with Password</string>
 <string name="edit_feedback">Edit Feedback</string>
 <string name="delete_selected">Delete Selected</string>
 <string name="cancel">Cancel</string>
 <string name="select">Select</string>
 <string name="update_feedback">Update Feedback</string>
-<string name="view_recent_feedback">View Recent Feedback</string>
 <string name="rating_very_bad">😞 Very Bad</string>
 <string name="rating_bad">😕 Bad</string>
 <string name="rating_okay">😐 Okay</string>
 <string name="rating_good">🙂 Good</string>
 <string name="rating_excellent">🤩 Excellent</string>
-<string name="word_count_format">Words: %1$d / %2$d</string>
     <!--Communsearch-->
     <string-array name="search_fields">
         <item>All</item>
