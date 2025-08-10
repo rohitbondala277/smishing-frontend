@@ -2,8 +2,14 @@ package com.example.smishingdetectionapp.ui.login;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
 import android.text.InputType;
+
+//import android.text.method.HideReturnsTransformationMethod;
+//import android.text.method.PasswordTransformationMethod;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -38,11 +44,21 @@ public class LoginActivity extends AppCompatActivity {
     private ActivityLoginBinding binding;
     private Retrofitinterface api;
     private boolean isPinLogin = false;
+    private Retrofit retrofit;
+    private Retrofitinterface retrofitinterface;
+    //private Object BuildConfig;
+    private String BASE_URL = BuildConfig.SERVERIP;
     private boolean isPasswordVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // BLOCKING screenshots and screen recording
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE);
+
+        // Inflate layout
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -71,6 +87,27 @@ public class LoginActivity extends AppCompatActivity {
         // Toggle Password/PIN mode
         togglePinBtn.setOnClickListener(v -> {
             secretEt.setText("");
+
+        // ViewModel setup
+        loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
+                .get(LoginViewModel.class);
+
+        // View bindings
+        final EditText usernameEditText = binding.email;
+        final EditText passwordEditText = binding.password;
+        final Button loginButton = binding.loginButton;
+        final ProgressBar loadingProgressBar = binding.progressbar;
+        final SignInButton googleBtn = binding.googleBtn;
+        final Button registerButton = binding.registerButton;
+        final ImageButton togglePasswordVisibility = binding.togglePasswordVisibility;
+        final Button togglePinLogin = binding.togglePinLogin;
+
+        // Toggle functionality for PIN and Password login
+        togglePinLogin.setOnClickListener(v -> {
+            passwordEditText.setText("");
+
+
+
             if (isPinLogin) {
                 // Switch to password
                 isPinLogin = false;
@@ -168,6 +205,35 @@ public class LoginActivity extends AppCompatActivity {
                 progress.setVisibility(ProgressBar.GONE);
                 if (res.isSuccessful() && res.body() != null && res.body().isSuccess()) {
                     Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+
+        }
+    }
+
+    private void loginWithPin(String pin) {
+        // For testing purposes, simulate a successful PIN login
+        Toast.makeText(LoginActivity.this, "PIN verified successfully (bypassed for testing)", Toast.LENGTH_SHORT).show();
+        navigateToMainActivity();
+    }
+
+    private void loginWithPassword(String email, String password) {
+        // For testing purposes, simulate a successful login
+        Toast.makeText(LoginActivity.this, "Login successful (bypassed for testing)", Toast.LENGTH_SHORT).show();
+        navigateToMainActivity();
+    }
+
+    private void handleLoginDialog() {
+        final EditText usernameEditText = binding.email;
+        final EditText passwordEditText = binding.password;
+
+        HashMap<String, String> map = new HashMap<>();
+        map.put("email", usernameEditText.getText().toString());
+        map.put("password", passwordEditText.getText().toString());
+
+        Call<DBresult> call = retrofitinterface.executeLogin(map);
+        call.enqueue(new Callback<DBresult>() {
+            @Override
+            public void onResponse(Call<DBresult> call, Response<DBresult> response) {
+                if (response.code() == 200) {
                     navigateToMainActivity();
                 } else {
                     Toast.makeText(LoginActivity.this, "Invalid email or PIN", Toast.LENGTH_LONG).show();
@@ -192,5 +258,13 @@ public class LoginActivity extends AppCompatActivity {
 
     private void showLoginFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Reapply the secure flag when activity resumes
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE);
     }
 }
