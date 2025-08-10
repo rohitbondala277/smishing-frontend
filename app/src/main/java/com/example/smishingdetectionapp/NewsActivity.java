@@ -62,7 +62,7 @@ public class NewsActivity extends SharedActivity implements SelectListener {
             startActivity(intent);
         });
 
-        // Bottom navigation setup
+        // Bottom navigation setup(Pahul)
         BottomNavigationView nav = findViewById(R.id.bottom_navigation);
         nav.setSelectedItemId(R.id.nav_news);
         nav.setOnItemSelectedListener(menuItem -> {
