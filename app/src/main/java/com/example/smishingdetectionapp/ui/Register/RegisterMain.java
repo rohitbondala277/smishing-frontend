@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.regex.Pattern;
 
+
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
@@ -136,13 +137,13 @@ public class RegisterMain extends AppCompatActivity {
         return String.valueOf(code);
     }
 
-    private void sendVerificationEmail(String email, String verificationCode) {
-        String subject = "Your Verification Code";
-        String message = "Your verification code is: " + verificationCode;
-
-        JavaMailAPI javaMailAPI = new JavaMailAPI(this, email, subject, message);
-        javaMailAPI.execute();
-    }
+//    private void sendVerificationEmail(String email, String verificationCode) {
+//        String subject = "Your Verification Code";
+//        String message = "Your verification code is: " + verificationCode;
+//
+//        JavaMailAPI javaMailAPI = new JavaMailAPI(this, email, subject, message);
+//        javaMailAPI.execute();
+//    }
 
     private boolean validateInput(String fullName, String phoneNumber, String email, String password) {
         if (TextUtils.isEmpty(fullName)) {
@@ -189,40 +190,43 @@ public class RegisterMain extends AppCompatActivity {
         return true;
     }
 
-    /*
+
     private void validateAndCheckEmail(final String fullName, final String phoneNumber, final String email, final String password) {
         HashMap<String, String> map = new HashMap<>();
+        map.put("fullName", fullName);
+        map.put("phoneNumber", phoneNumber);
         map.put("email", email);
+        map.put("password", password);
 
-        Call<SignupResponse> call = retrofitinterface.checkEmail(map);
+        Call<SignupResponse> call = retrofitinterface.executeSignup(map);
         call.enqueue(new Callback<SignupResponse>() {
             @Override
             public void onResponse(Call<SignupResponse> call, Response<SignupResponse> response) {
                 if (response.isSuccessful()) {
-                    String verificationCode = generateVerificationCode();
-                    sendVerificationEmail(email, verificationCode);
-
+                    // Navigate to email verification screen after successful registration
                     Intent intent = new Intent(RegisterMain.this, EmailVerify.class);
                     intent.putExtra("fullName", fullName);
                     intent.putExtra("phoneNumber", phoneNumber);
                     intent.putExtra("email", email);
                     intent.putExtra("password", password);
-                    intent.putExtra("code", verificationCode);
                     startActivity(intent);
                 } else if (response.code() == 409) {
                     Snackbar.make(binding.getRoot(), "Email already exists.", Snackbar.LENGTH_LONG).show();
                 } else {
-                    Snackbar.make(binding.getRoot(), "Error checking email. Please try again.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(binding.getRoot(), "Signup failed. Please try again.", Snackbar.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<SignupResponse> call, Throwable t) {
-                Snackbar.make(binding.getRoot(), "Network error. Please try again.", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(binding.getRoot(), "Network error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
     }
-     */
+
+
+
+    /*
     // Bypassing verification for testing purposes
     private void validateAndCheckEmail(final String fullName, final String phoneNumber, final String email, final String password) {
         // Instead of calling the server, simulate a successful email check
@@ -240,6 +244,7 @@ public class RegisterMain extends AppCompatActivity {
         intent.putExtra("code", verificationCode);
         startActivity(intent);
     }
+     */
 
 
     private boolean isValidEmailAddress(String email) {
@@ -247,7 +252,7 @@ public class RegisterMain extends AppCompatActivity {
             InternetAddress emailAddr = new InternetAddress(email);
             emailAddr.validate();
 
-            String emailPattern = "^[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
+            String emailPattern = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
             return Pattern.matches(emailPattern, email) && !email.contains("..") && !email.startsWith(".") && !email.endsWith(".");
         } catch (AddressException ex) {
             return false;
