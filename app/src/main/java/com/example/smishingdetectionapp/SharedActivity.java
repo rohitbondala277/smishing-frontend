@@ -11,8 +11,7 @@ import com.example.smishingdetectionapp.ui.login.LoginActivity;
 import android.content.Context;
 import android.content.res.Configuration;
 
-<<<<<<< Updated upstream
-=======
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.SharedPreferences;
@@ -23,7 +22,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
->>>>>>> Stashed changes
+
 
 public abstract class SharedActivity extends AppCompatActivity {
     private static final int SESSION_TIMEOUT_MS = 1200000; // 20 minutes
@@ -42,8 +41,6 @@ public abstract class SharedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setupSessionTimeout();
     }
-<<<<<<< Updated upstream
-=======
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -85,7 +82,7 @@ public abstract class SharedActivity extends AppCompatActivity {
             }
         }
     }
->>>>>>> Stashed changes
+
 
     private void setupSessionTimeout() {
         sessionHandler = new Handler();
