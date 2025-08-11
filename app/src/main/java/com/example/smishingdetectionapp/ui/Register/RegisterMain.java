@@ -131,19 +131,6 @@ public class RegisterMain extends AppCompatActivity {
         }
     }
 
-    private String generateVerificationCode() {
-        Random random = new Random();
-        int code = 100000 + random.nextInt(900000); // Generate a random 6-digit code
-        return String.valueOf(code);
-    }
-
-//    private void sendVerificationEmail(String email, String verificationCode) {
-//        String subject = "Your Verification Code";
-//        String message = "Your verification code is: " + verificationCode;
-//
-//        JavaMailAPI javaMailAPI = new JavaMailAPI(this, email, subject, message);
-//        javaMailAPI.execute();
-//    }
 
     private boolean validateInput(String fullName, String phoneNumber, String email, String password) {
         if (TextUtils.isEmpty(fullName)) {
@@ -219,7 +206,7 @@ public class RegisterMain extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<SignupResponse> call, Throwable t) {
-                Snackbar.make(binding.getRoot(), "Network error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
+                Snackbar.make(binding.getRoot(), "Network error: Please try again.", Snackbar.LENGTH_LONG).show();
             }
         });
     }

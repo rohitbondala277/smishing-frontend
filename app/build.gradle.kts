@@ -26,8 +26,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        // buildConfigField("String", "EMAIL", "\"smsphishing8@gmail.com\"")
-        // buildConfigField("String", "EMAILPASSWORD", "\"xedr gaek jdsv ujxw\"")
         buildConfigField("String", "SERVERIP", "\"https://smishing-backend-1004745454775.australia-southeast1.run.app/api/auth/\"")
         vectorDrawables {
             useSupportLibrary = true
