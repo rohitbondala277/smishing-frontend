@@ -533,6 +533,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/aboutUsBtn" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/inviteFriendsBtn"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/buttons_rounded"
+                android:text="@string/invite_friend"
+                android:textColor="@android:color/black"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contactUsBtn" />
+
 
 
 
@@ -547,7 +561,9 @@
                 android:text="@string/sign_outBtn"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/contactUsBtn" />
+                app:layout_constraintTop_toBottomOf="@+id/inviteFriendsBtn" />
+
+
 
 
 
