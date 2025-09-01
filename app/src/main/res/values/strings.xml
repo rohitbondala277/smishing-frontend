@@ -387,6 +387,10 @@
     <string name="Forums_and_Report">Forums &amp; Report</string>
     <string name="word_count_format">Words: %1$d / %2$d</string>
     <string name="feedback_success">Feedback submitted successfully!</string>
+    <string name="invite_friend">Invite a Friend</string>
+    <string name="share_to_story">Share to story</string>
+
+
     <!-- Contact Us Strings -->
     <string name="contact_us">Contact Us</string>
     <string name="app_logo">App Logo</string>
