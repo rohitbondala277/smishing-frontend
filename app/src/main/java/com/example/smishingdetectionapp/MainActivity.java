@@ -268,3 +268,4 @@ public class MainActivity extends SharedActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp();
     }
 }
+
