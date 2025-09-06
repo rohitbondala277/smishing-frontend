@@ -8,14 +8,14 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 
 public interface Retrofitinterface {
+        // TODO: need to test the login with pin with live backend server as it does not mention any backend route for login with pin so i created , running perfectly in local
 
-        @POST("api/auth/login-password")
-        Call<LoginResponse> loginPassword(@Body Map<String, String> body);
+        @POST("auth/login")
+        Call<LoginResponse> loginPassword(@Body Map<String, String> body);          // login   email + password
 
-        @POST("api/auth/login-pin")
-        Call<LoginResponse> loginPin(@Body Map<String, String> body);
+        @POST("auth/login-pin")
+        Call<LoginResponse> loginPin(@Body Map<String, String> body);               // login  email + pin
 
-        // ADD THIS so EmailVerify.java can compile:
-        @POST("api/auth/signup")
-        Call<SignupResponse> executeSignup(@Body HashMap<String, String> map);
+        @POST("auth/signup")
+        Call<SignupResponse> executeSignup(@Body HashMap<String, String> map);      // sign up
 }
