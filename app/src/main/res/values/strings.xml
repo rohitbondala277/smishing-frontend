@@ -60,6 +60,7 @@
     <string name="cd_menu">More options</string>
     <string name="export_chat_history_txt">Export chat history (TXT)</string>
     <string name="export_chat_history_pdf">Export chat history (PDF)</string>
+    <string name="smishing_assistant">Smishing Assistant</string>
     <!-- Error messages -->
     <string name="no_network_message">No available network. Please check your internet connection or try again later</string>
 

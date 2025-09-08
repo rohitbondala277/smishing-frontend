@@ -10,8 +10,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.PopupMenu;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -61,7 +61,7 @@ public class ChatAssistantActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
 
         ImageButton backButton = findViewById(R.id.btnBack);
-        TextView historyButton = findViewById(R.id.historyButton);
+        ImageButton menuButton = findViewById(R.id.menuButton); // 3-dot menu in header
 
         // 2) setup RecyclerView
         chatAdapter = new ChatAdapter(this);
@@ -83,10 +83,19 @@ public class ChatAssistantActivity extends AppCompatActivity {
             });
         }
 
-        if (historyButton != null) {
-            historyButton.setOnClickListener(v ->
-                    startActivity(new Intent(ChatAssistantActivity.this, ChatHistoryActivity.class))
-            );
+        if (menuButton != null) {
+            menuButton.setOnClickListener(v -> {
+                PopupMenu popup = new PopupMenu(ChatAssistantActivity.this, v);
+                popup.getMenuInflater().inflate(R.menu.chat_assistant_menu, popup.getMenu());
+                popup.setOnMenuItemClickListener(item -> {
+                    if (item.getItemId() == R.id.action_view_history) {
+                        startActivity(new Intent(ChatAssistantActivity.this, ChatHistoryActivity.class));
+                        return true;
+                    }
+                    return false;
+                });
+                popup.show();
+            });
         }
 
         sendButton.setOnClickListener(v -> sendMessage());
@@ -129,33 +138,51 @@ public class ChatAssistantActivity extends AppCompatActivity {
                 "Yes. SMS permission is required so the app can scan and detect suspicious messages on your device.");
         supportPrompts.put("how to contact support",
                 "You can use this chat assistant for quick help or raise an issue through the 'Community Report' section.");
+
         // --- Greetings ---
-        supportPrompts.put("hi",
-                "Hi! I’m your Smishing Smart Assistant. How can I help you today?");
-        supportPrompts.put("hello",
-                "Hello! I’m here to assist you with smishing detection and reporting.");
-        supportPrompts.put("hey",
-                "Hey there! Need help checking a suspicious SMS?");
-        supportPrompts.put("good morning",
-                "Good morning! How can I support you today?");
-        supportPrompts.put("good afternoon",
-                "Good afternoon! Do you want to learn more about smishing or check a message?");
-        supportPrompts.put("good evening",
-                "Good evening! I can help you understand smishing or report an SMS.");
+        supportPrompts.put("hi", "Hi! I’m your Smishing Assistant. How can I help you today?");
+        supportPrompts.put("hello", "Hello! I’m here to assist you with smishing detection and reporting.");
+        supportPrompts.put("hey", "Hey there! Need help checking a suspicious SMS?");
+        supportPrompts.put("good morning", "Good morning! How can I support you today?");
+        supportPrompts.put("good afternoon", "Good afternoon! Do you want to learn more about smishing or check a message?");
+        supportPrompts.put("good evening", "Good evening! I can help you understand smishing or report an SMS.");
+
         // --- Politeness & Thanks ---
         supportPrompts.put("thanks", "You’re welcome! Stay safe from smishing.");
         supportPrompts.put("thank you", "Happy to help! Let me know if you have more questions.");
         supportPrompts.put("ok", "Alright! Let me know if you’d like to learn more about smishing.");
         supportPrompts.put("cool", "Glad you think so! You can ask me about smishing anytime.");
-// --- Clarifications / Confusions ---
-        supportPrompts.put("who are you", "I’m the Smishing Smart Assistant. I help explain smishing, check suspicious texts, and guide you to report them.");
+
+        // --- Clarifications / Confusions ---
+        supportPrompts.put("who are you", "I’m the Smishing Assistant. I help explain smishing, check suspicious texts, and guide you to report them.");
         supportPrompts.put("what can you do", "I can explain smishing, guide you on using the app, and help you report suspicious SMS.");
         supportPrompts.put("help me", "Sure! You can ask me things like ‘What is smishing?’ or ‘How do I report a message?’");
+
         // --- Fallback / Fun Responses ---
         supportPrompts.put("bye", "Goodbye! Stay safe and remember to check suspicious messages.");
         supportPrompts.put("see you", "See you later! Don’t forget to stay cautious with SMS links.");
         supportPrompts.put("are you real", "I’m a virtual assistant built to help you with smishing—not human, but always available!");
         supportPrompts.put("how are you", "I’m always doing great, ready to help you with smishing. How are you?");
+
+        // --- Security Tips ---
+        supportPrompts.put("how to stay safe", "Avoid clicking unknown links, don’t share personal info via SMS, and verify messages with the official source.");
+        supportPrompts.put("tips", "1) Never trust urgent SMS links. 2) Verify with the company directly. 3) Use this app to check suspicious texts.");
+
+        // --- App Troubleshooting ---
+        supportPrompts.put("app not working", "Try restarting the app. If the issue persists, reinstall from Google Play or contact support.");
+        supportPrompts.put("cant report", "Make sure you’re connected to the internet. Go to Community Report and submit the suspicious SMS again.");
+
+        // --- Account / Data ---
+        supportPrompts.put("can i recover deleted history", "No, once chat history is deleted, it cannot be recovered.");
+        supportPrompts.put("what data is stored", "Only suspicious SMS metadata and your reports are stored locally. Nothing is shared without consent.");
+
+        // --- Learning / Awareness ---
+        supportPrompts.put("examples of smishing", "Messages asking you to click a link for parcel delivery, banking updates, or urgent prizes are common smishing attempts.");
+        supportPrompts.put("why is smishing dangerous", "Because attackers trick you into giving away personal info, banking details, or installing malware.");
+
+        // --- Encouragement ---
+        supportPrompts.put("im worried", "That’s understandable. Smishing is common, but with awareness and this app, you’re safe.");
+        supportPrompts.put("scam message received", "Please don’t click anything. Copy or forward the message here so I can help check it.");
     }
 
     /** Adds a friendly greeting if the chat is empty. */
@@ -195,7 +222,6 @@ public class ChatAssistantActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     respondToUser(botReply);
 
-                    // Special follow-up example
                     if ("is this a scam".equals(key)) {
                         new Handler(Looper.getMainLooper())
                                 .postDelayed(() ->
@@ -203,7 +229,6 @@ public class ChatAssistantActivity extends AppCompatActivity {
                                         2000);
                     }
 
-                    // After a few quick replies, escalate to LLM once
                     if (supportPromptCount >= MAX_SUPPORT_PROMPTS) {
                         new Handler(Looper.getMainLooper()).postDelayed(() -> {
                             respondToUser("Transferring you to the assistant for more detailed help…");
@@ -213,12 +238,11 @@ public class ChatAssistantActivity extends AppCompatActivity {
                             callLlm(message);
                         }, 1200);
                     } else {
-                        // Not escalating yet — end here
                         resetUiIdle();
                     }
                 });
 
-                return; // handled
+                return;
             }
         }
 

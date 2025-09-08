@@ -12,16 +12,25 @@
     android:gravity="start"
     android:baselineAligned="false">
 
-    <!-- Bot Profile Icon -->
-    <ImageView
-        android:id="@+id/botProfileIcon"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:src="@drawable/ic_bot_profile"
-        android:contentDescription="@string/bot_profile_icon"
-        android:layout_gravity="top"
+    <!-- Bot Profile Icon with Circular Background -->
+    <FrameLayout
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/circle_bot_bg"
         android:layout_marginEnd="8dp"
-        app:tint="@color/smish_bot_icon" />
+        android:layout_gravity="top"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/botProfileIcon"
+            android:layout_width="38dp"
+            android:layout_height="39dp"
+            android:src="@drawable/new_logo"
+            app:tint="@null"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/bot_profile_icon"/>
+    </FrameLayout>
 
     <!-- Message + Timestamp container -->
     <LinearLayout

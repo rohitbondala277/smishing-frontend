@@ -31,7 +31,7 @@
             android:contentDescription="@string/cd_back"
             android:scaleType="center"
             app:tint="@color/smish_white"
-            app:srcCompat="@android:drawable/ic_media_previous"
+            app:srcCompat="@drawable/back_button"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
