@@ -157,6 +157,10 @@
             android:name=".ui.SupportFeedbackActivity"
             android:exported="false"
             android:label="@string/support_feedback_title" />
+        <activity android:name=".ui.SupportFeedbackDetailsActivity"
+            android:exported="false"
+            android:label="@string/support_feedback_details_title" />
+
         <!-- Widgets -->
         <receiver android:name=".ui.SmishingWidgetSmall" android:exported="true">
             <intent-filter>
