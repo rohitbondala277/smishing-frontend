@@ -44,5 +44,6 @@
  <color name="smish_text_on_primary">#FFFFFFFF</color>
  <color name="smish_text_primary">#0B1B2B</color>
  <color name="smish_text_secondary">#999999</color>
-
+ <color name="star_filled">#FFD700</color>   <!-- Gold -->
+ <color name="star_empty">#DDDDDD</color>   <!-- Light grey -->
 </resources>

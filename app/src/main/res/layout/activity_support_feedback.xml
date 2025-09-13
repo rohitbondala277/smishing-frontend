@@ -19,7 +19,7 @@
             android:gravity="center_vertical"
             android:paddingBottom="16dp">
 
-            <!-- Back button (48dp min touch target) -->
+            <!-- Back button (min 48dp touch target) -->
             <ImageButton
                 android:id="@+id/btnBack"
                 android:layout_width="48dp"
@@ -66,25 +66,29 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbYes"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:minHeight="48dp"
+                android:minWidth="48dp"
                 android:text="@string/feedback_yes"
                 android:textColor="@color/smish_text_primary"
-                android:buttonTint="@color/smish_bot_icon" />
+                app:buttonTint="@color/green" />
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rbNo"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:minHeight="48dp"
+                android:minWidth="48dp"
                 android:text="@string/feedback_no"
                 android:textColor="@color/smish_text_primary"
-                android:buttonTint="@color/redd" />
+                app:buttonTint="@color/redd" />
         </RadioGroup>
-
+        <!-- Q2: rating -->
         <!-- Q2: rating -->
         <TextView
             android:id="@+id/tvRateService"
@@ -98,21 +102,22 @@
 
         <RatingBar
             android:id="@+id/ratingBar"
-            style="?android:attr/ratingBarStyleIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:numStars="5"
             android:stepSize="1"
             android:isIndicator="false"
-            android:scaleX="1.5"
-            android:scaleY="1.5"
-            android:layout_marginBottom="6dp" />
-
+            android:rating="0"
+            android:layout_marginBottom="6dp"
+            android:scaleX="1.0"
+            android:scaleY="1.0"
+            android:progressTint="@color/star_filled"
+            android:progressBackgroundTint="@color/star_empty" />
         <TextView
             android:id="@+id/tvRatingLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select rating"
+            android:text="@string/select_rating"
             android:textColor="@color/smish_text_secondary"
             android:textSize="14sp"
             android:layout_marginBottom="16dp" />
