@@ -106,7 +106,7 @@
     <string name="cd_success">Feedback submitted successfully</string>
 
     <!-- Thank you / confirmation -->
-    <string name="feedback_thank_you">Thank you for your feedback!</string>
+    <string name="feedback_thank_you">Thank you for your feedback! Your support is what motivates us to keep improving.</string>
     <string name="feedback_summary_default">Excellent</string>
     <string name="rating_poor">Poor 😞</string>
     <string name="rating_fair">Fair 😐</string>
