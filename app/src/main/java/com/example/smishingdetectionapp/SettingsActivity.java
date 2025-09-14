@@ -28,11 +28,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.materialswitch.MaterialSwitch;
 
 import java.util.concurrent.Executor;
+
 import android.widget.ScrollView;
 import android.graphics.Typeface;
 import android.view.ViewGroup;
 
-import androidx.preference.PreferenceManager;
+import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
 import android.widget.Switch;
 import com.example.smishingdetectionapp.ui.ContactUsActivity;
