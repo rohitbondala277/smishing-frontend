@@ -57,9 +57,6 @@ public class ChatHistoryActivity extends AppCompatActivity {
                 } else if (id == R.id.action_clear) {
                     confirmAndDeleteHistory();
                     return true;
-                } else if (id == R.id.action_feedback) {
-                    openSupportFeedback();
-                    return true;
                 }
                 return false;
             });
@@ -270,12 +267,5 @@ public class ChatHistoryActivity extends AppCompatActivity {
             e.printStackTrace();
             Toast.makeText(this, "Failed to export chat history PDF.", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    // ---------- Support Feedback ----------
-    private void openSupportFeedback() {
-        Intent intent = new Intent(this,
-                com.example.smishingdetectionapp.ui.SupportFeedbackActivity.class);
-        startActivity(intent);
     }
 }
