@@ -26,7 +26,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "SERVERIP", "\"https://smishing-backend-1004745454775.australia-southeast1.run.app/api/auth/\"")
+        buildConfigField("String", "SERVERIP", "\"https://smishing-backend-1004745454775.australia-southeast1.run.app/api/\"")
         vectorDrawables {
             useSupportLibrary = true
         }

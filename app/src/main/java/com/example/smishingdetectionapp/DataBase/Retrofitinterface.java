@@ -8,12 +8,12 @@ import retrofit2.http.POST;
 
 public interface Retrofitinterface {
 
-    @POST("/login")
+    @POST("auth/login")
     Call<DBresult> executeLogin(@Body HashMap<String, String> map);
 
-    @POST("signup")
+    @POST("auth/signup")
     Call<SignupResponse> executeSignup(@Body HashMap<String, String> map);
 
-    @POST("verify-email")
+    @POST("auth/verify-email")
     Call<SignupResponse> verifyEmail(@Body HashMap<String, String> map);
 }
