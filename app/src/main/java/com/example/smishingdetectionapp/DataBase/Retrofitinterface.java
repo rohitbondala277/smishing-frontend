@@ -18,4 +18,8 @@ public interface Retrofitinterface {
 
         @POST("auth/signup")
         Call<SignupResponse> executeSignup(@Body HashMap<String, String> map);      // sign up
+
+        @POST("auth/verify-email")
+        Call<SignupResponse> verifyEmail(@Body HashMap<String, String> map);
 }
+

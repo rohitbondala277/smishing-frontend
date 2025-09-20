@@ -41,9 +41,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class EmailVerify extends AppCompatActivity {
 
-    private int otpLength = 4; // make this dynamic if needed
+    private int otpLength = 6; // make this dynamic if needed
     private EditText[] otpFields;
-    private String verificationCode;
     private String email, fullName, phoneNumber, password;
 
     private TextView resendText;
@@ -83,7 +82,6 @@ public class EmailVerify extends AppCompatActivity {
         phoneNumber = intent.getStringExtra("phoneNumber");
         email = intent.getStringExtra("email");
         password = intent.getStringExtra("password");
-        verificationCode = intent.getStringExtra("code");
 
         resendText = findViewById(R.id.resendText);
         verifyButton = findViewById(R.id.continueBtn);
@@ -129,20 +127,37 @@ public class EmailVerify extends AppCompatActivity {
         verifyButton.setOnClickListener(v -> {
             String enteredOTP = getEnteredOTP();
             if (enteredOTP.length() != otpLength) {
-                Snackbar.make(findViewById(android.R.id.content), "Please enter full code.", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(findViewById(android.R.id.content), "Please enter full 6 digit code.", Snackbar.LENGTH_LONG).show();
                 return;
             }
+            //verify email function needs email and OTP passed to it
+            HashMap<String, String> body = new HashMap<>();
+            body.put("email", email);
+            body.put("otp", enteredOTP);
 
-            // Uncomment below for real verification
-            /*
-            if (!enteredOTP.equals(verificationCode)) {
-                Snackbar.make(findViewById(android.R.id.content), "Invalid verification code.", Snackbar.LENGTH_LONG).show();
-                return;
-            }
-            */
+            Call<SignupResponse> call = retrofitinterface.verifyEmail(body);
+            call.enqueue(new Callback<SignupResponse>() {
+                @Override
+                public void onResponse(Call<SignupResponse> call, Response<SignupResponse> response) {
+                    if (response.isSuccessful()) {
+                        Snackbar.make(findViewById(android.R.id.content),
+                                "Email verified successfully.", Snackbar.LENGTH_LONG).show();
 
-            Snackbar.make(findViewById(android.R.id.content), "Email verified successfully.", Snackbar.LENGTH_LONG).show();
-            completeSignup();
+                        //Take user to main once email is verified
+                        startActivity(new Intent(EmailVerify.this, MainActivity.class));
+                        finish();
+                    } else {
+                        Snackbar.make(findViewById(android.R.id.content),
+                                "Invalid or expired code. Please try again.", Snackbar.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<SignupResponse> call, Throwable t) {
+                    Snackbar.make(findViewById(android.R.id.content),
+                            "There was an error. Please try again.", Snackbar.LENGTH_LONG).show();
+                }
+            });
         });
     }
 
