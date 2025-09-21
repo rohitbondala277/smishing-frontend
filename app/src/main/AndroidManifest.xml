@@ -17,6 +17,8 @@
 
     <!-- Optional Features -->
     <uses-feature android:name="android.hardware.telephony" android:required="false" />
+    <!-- Match CAMERA permission (optional, avoids lint warnings) -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -98,6 +100,13 @@
         <activity android:name=".ui.ContactUsActivity" />
         <activity android:name=".ui.Submissionscreen" android:exported="false" />
 
+        <!-- ✅ Your part: User Profile screen -->
+        <activity
+            android:name=".UserProfileActivity"
+            android:exported="true"
+            android:label="@string/user_profile_title" />
+        <!-- If you still get a missing-string error here, change label to @string/app_name -->
+
         <!-- Chat -->
         <activity
             android:name=".chat.ChatAssistantActivity"
@@ -106,6 +115,7 @@
 
         <!-- FAQ -->
         <activity android:name=".FaqActivity" android:exported="false" />
+        <activity android:name=".RiskProfileActivity" />
 
         <!-- Community -->
         <activity android:name=".Community.CommunityHomeActivity" />
@@ -116,7 +126,7 @@
 
         <!-- Feedback -->
         <activity android:name=".FeedbackActivity" android:exported="false" />
-        <activity android:name=".FeedbackHistoryActivity" android:exported="false"/>
+        <activity android:name=".FeedbackHistoryActivity" android:exported="false" />
 
         <!-- Radar -->
         <activity android:name=".RadarActivity" android:exported="true" />
@@ -137,24 +147,31 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_small_info" />
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_small_info" />
         </receiver>
 
         <receiver android:name=".ui.SmishingWidgetMedium" android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_medium_info" />
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_medium_info" />
         </receiver>
 
         <receiver android:name=".ui.SmishingWidgetLarge" android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_large_info" />
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_large_info" />
         </receiver>
 
     </application>
 
-</manifest>
 
+
+</manifest>
