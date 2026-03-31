@@ -25,6 +25,7 @@ import com.example.smishingdetectionapp.chat.ChatAssistantActivity;
 import com.example.smishingdetectionapp.ui.account.AccountActivity;
 import com.example.smishingdetectionapp.ui.login.LoginActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.smishingdetectionapp.navigation.BottomNavCoordinator;
 import com.google.android.material.materialswitch.MaterialSwitch;
 
 import java.util.concurrent.Executor;
@@ -152,41 +153,8 @@ public class SettingsActivity extends AppCompatActivity {
             });
         }
 
-        BottomNavigationView nav = findViewById(R.id.bottom_navigation);
+        BottomNavCoordinator.setup(this, R.id.nav_settings);
 
-        nav.setSelectedItemId(R.id.nav_settings);
-
-        nav.setOnItemSelectedListener(menuItem -> {
-            int id = menuItem.getItemId();
-            if (id == R.id.nav_home) {
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-
-            } else if (menuItem.getItemId() == R.id.nav_report) {
-                Intent i = new Intent(this, CommunityReportActivity.class);
-                i.putExtra("source", "home");
-                startActivity(i);
-                overridePendingTransition(0,0);
-                finish();
-                return true;
-
-            } else if (id == R.id.nav_news) {
-                startActivity(new Intent(getApplicationContext(), NewsActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            } else if (id == R.id.nav_settings) {
-                Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
-                intent.putExtra("from_navigation", true);
-                startActivity(intent);
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            }
-            return false;
-        });
 
         // Account button to switch to account page with biometric authentication
         Button accountBtn = findViewById(R.id.accountBtn);
