@@ -89,6 +89,10 @@ android {
 dependencies {
 
     implementation(project(":shared"))
+    implementation("com.russhwolf:multiplatform-settings:1.1.1")
+    implementation("io.insert-koin:koin-core:3.5.6")
+    implementation("io.insert-koin:koin-android:3.5.6")
+
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
