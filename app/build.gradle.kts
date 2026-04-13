@@ -28,7 +28,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "EMAIL", "\"smsphishing8@gmail.com\"")
         buildConfigField("String", "EMAILPASSWORD", "\"xedr gaek jdsv ujxw\"")
-        buildConfigField("String", "SERVERIP", "\"http:192.168.?.?:3000\"")
+        buildConfigField("String", "SERVERIP", "\"http://10.0.2.2:5000/\"")
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -37,7 +37,7 @@ android {
 
 
 
-   }
+    }
 
     buildTypes {
         release {
@@ -77,6 +77,8 @@ android {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
@@ -116,6 +118,17 @@ dependencies {
     implementation("io.noties.markwon:html:4.6.2")
     implementation("io.noties.markwon:image:4.6.2")
     implementation("com.google.android.gms:play-services-auth:20.0.0")
-
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation ("com.tbuonomo:dotsindicator:4.3")
+    implementation("com.airbnb.android:lottie:6.1.0")
+    implementation ("com.google.code.gson:gson:2.10.1")
+    implementation("com.itextpdf:itextg:5.5.10")
+    implementation ("androidx.cardview:cardview:1.0.0")
+    implementation ("com.google.android.material:material:1.10.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.core:core-ktx:1.10.0")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("com.getkeepsafe.taptargetview:taptargetview:1.13.3")
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
 }
-
