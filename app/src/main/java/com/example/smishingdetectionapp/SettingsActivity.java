@@ -21,11 +21,9 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         BottomNavigationView nav = findViewById(R.id.bottom_navigation);
-
         nav.setSelectedItemId(R.id.nav_settings);
 
         nav.setOnItemSelectedListener(menuItem -> {
-
             int id = menuItem.getItemId();
             if (id == R.id.nav_home) {
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
@@ -43,58 +41,57 @@ public class SettingsActivity extends AppCompatActivity {
             return false;
         });
 
-        // Account button — opens AccountActivity directly
+        // Account button
         Button accountBtn = findViewById(R.id.accountBtn);
         accountBtn.setOnClickListener(v -> openAccountActivity());
 
-        // Filtering button to switch to Smishing rules page
+        // Filtering button
         Button filteringBtn = findViewById(R.id.filteringBtn);
         filteringBtn.setOnClickListener(v -> {
             startActivity(new Intent(this, SmishingRulesActivity.class));
             finish();
         });
 
-        // Report button to switch to reporting page
+        // Report button
         Button reportBtn = findViewById(R.id.reportBtn);
         reportBtn.setOnClickListener(v -> {
             startActivity(new Intent(this, ReportingActivity.class));
             finish();
         });
 
-        // Help button to switch to Help page
+        // Help button
         Button helpBtn = findViewById(R.id.helpBtn);
         helpBtn.setOnClickListener(v -> {
             startActivity(new Intent(this, HelpActivity.class));
             finish();
         });
 
-        // About Me button to switch to AboutMeActivity
+        // About Me button
         Button aboutMeButton = findViewById(R.id.aboutMeBtn);
         aboutMeButton.setOnClickListener(v -> {
-            Intent intent = new Intent(SettingsActivity.this, AboutMeActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(SettingsActivity.this, AboutMeActivity.class));
         });
 
+        // About Us button
         Button aboutUsBtn = findViewById(R.id.aboutUsBtn);
         aboutUsBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(SettingsActivity.this, AboutUsActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(SettingsActivity.this, AboutUsActivity.class));
         });
 
+        // Chat Assistant button
         Button chatAssistantBtn = findViewById(R.id.chatAssistantBtn);
         chatAssistantBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(SettingsActivity.this, ChatAssistantActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(SettingsActivity.this, ChatAssistantActivity.class));
         });
 
-        // Feedback button to switch to Feedback page
+        // Feedback button
         Button feedbackBtn = findViewById(R.id.feedbackBtn);
         feedbackBtn.setOnClickListener(v -> {
             startActivity(new Intent(this, FeedbackActivity.class));
             finish();
         });
 
-        // Forum button to switch to Forum page
+        // Forum button
         Button forumBtn = findViewById(R.id.forumBtn);
         forumBtn.setOnClickListener(v -> {
             startActivity(new Intent(this, ForumActivity.class));
@@ -104,14 +101,12 @@ public class SettingsActivity extends AppCompatActivity {
 
     // Open AccountActivity directly
     private void openAccountActivity() {
-        Intent intent = new Intent(SettingsActivity.this, AccountActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(SettingsActivity.this, AccountActivity.class));
         finish();
     }
 
-    // Notification button to switch to notification page
+    // Notification button
     public void openNotificationsActivity(View view) {
-        Intent intent = new Intent(this, NotificationActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(this, NotificationActivity.class));
     }
 }
