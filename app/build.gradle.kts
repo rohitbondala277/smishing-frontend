@@ -62,7 +62,15 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "DEBUG_LOGIN_EMAIL", "\"${configValue("DEBUG_LOGIN_EMAIL", "debug@example.com")}\"")
+            buildConfigField("String", "DEBUG_LOGIN_PASSWORD", "\"${configValue("DEBUG_LOGIN_PASSWORD", "DebugPass123!")}\"")
+            buildConfigField("String", "DEBUG_LOGIN_PIN", "\"${configValue("DEBUG_LOGIN_PIN", "000000")}\"")
+        }
         release {
+            buildConfigField("String", "DEBUG_LOGIN_EMAIL", "\"\"")
+            buildConfigField("String", "DEBUG_LOGIN_PASSWORD", "\"\"")
+            buildConfigField("String", "DEBUG_LOGIN_PIN", "\"\"")
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }

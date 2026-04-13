@@ -277,6 +277,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginWithPin(String pin) {
+        if (canUseDebugBypassWithPin(pin)) {
+            Toast.makeText(LoginActivity.this, "Debug PIN login successful", Toast.LENGTH_SHORT).show();
+            navigateToMainActivity();
+            return;
+        }
+
         if (databaseAccess.validatePin(pin)) {
             navigateToMainActivity();
         } else {
@@ -285,6 +291,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginWithPassword(String email, String password) {
+        if (canUseDebugBypassWithPassword(email, password)) {
+            Toast.makeText(LoginActivity.this, "Debug login successful", Toast.LENGTH_SHORT).show();
+            navigateToMainActivity();
+            return;
+        }
+
         if (databaseAccess.validateLogin(email, password)) {
             navigateToMainActivity();
             return;
@@ -334,6 +346,20 @@ public class LoginActivity extends AppCompatActivity {
 
     private void showLoginFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean canUseDebugBypassWithPassword(String email, String password) {
+        return BuildConfig.DEBUG
+                && !BuildConfig.DEBUG_LOGIN_EMAIL.isEmpty()
+                && !BuildConfig.DEBUG_LOGIN_PASSWORD.isEmpty()
+                && BuildConfig.DEBUG_LOGIN_EMAIL.equals(email)
+                && BuildConfig.DEBUG_LOGIN_PASSWORD.equals(password);
+    }
+
+    private boolean canUseDebugBypassWithPin(String pin) {
+        return BuildConfig.DEBUG
+                && !BuildConfig.DEBUG_LOGIN_PIN.isEmpty()
+                && BuildConfig.DEBUG_LOGIN_PIN.equals(pin);
     }
 
     @Override
