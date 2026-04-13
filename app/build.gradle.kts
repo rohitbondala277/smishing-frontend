@@ -1,4 +1,22 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use(::load)
+    }
+}
+
+fun configValue(name: String, defaultValue: String = ""): String {
+    val envValue = System.getenv(name)
+    val localValue = localProperties.getProperty(name)
+    return when {
+        !envValue.isNullOrBlank() -> envValue
+        !localValue.isNullOrBlank() -> localValue
+        else -> defaultValue
+    }
+}
 
 plugins {
     alias(libs.plugins.androidApplication)
@@ -30,9 +48,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "EMAIL", "\"smsphishing8@gmail.com\"")
-        buildConfigField("String", "EMAILPASSWORD", "\"xedr gaek jdsv ujxw\"")
-        buildConfigField("String", "SERVERIP", "\"http://10.0.2.2:5000/\"")
+        buildConfigField("String", "EMAIL", "\"${configValue("EMAIL")}\"")
+        buildConfigField("String", "EMAILPASSWORD", "\"${configValue("EMAILPASSWORD")}\"")
+        buildConfigField("String", "SERVERIP", "\"${configValue("SERVERIP", "https://example.invalid/")}\"")
         vectorDrawables {
             useSupportLibrary = true
         }
