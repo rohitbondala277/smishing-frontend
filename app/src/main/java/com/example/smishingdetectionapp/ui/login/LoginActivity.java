@@ -87,7 +87,7 @@ public class LoginActivity extends AppCompatActivity {
         final SignInButton googleBtn = binding.googleBtn;
         final Button registerButton = binding.registerButton;
         final ImageButton togglePasswordVisibility = binding.togglePasswordVisibility;
-        final Button togglePinLogin = binding.togglePinLogin;  // Added missing reference for togglePinLogin button
+        final Button togglePinLogin = (Button) binding.togglePinLogin;  // Added missing reference for togglePinLogin button
 
         // Toggle functionality for PIN and Password login
         togglePinLogin.setOnClickListener(v -> {
