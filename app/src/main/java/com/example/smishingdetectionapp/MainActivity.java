@@ -17,14 +17,14 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-
+import com.example.smishingdetectionapp.Community.CommunityReportActivity;
 import com.example.smishingdetectionapp.databinding.ActivityMainBinding;
 import com.example.smishingdetectionapp.detections.DatabaseAccess;
 import com.example.smishingdetectionapp.detections.DetectionsActivity;
 import com.example.smishingdetectionapp.RadarActivity;
 import com.example.smishingdetectionapp.notifications.NotificationPermissionDialogFragment;
 import com.example.smishingdetectionapp.riskmeter.RiskScannerTCActivity;
-import com.example.smishingdetectionapp.navigation.BottomNavCoordinator;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetSequence;
 
@@ -50,7 +50,27 @@ public class MainActivity extends SharedActivity {
             showNotificationPermissionDialog();
         }
 
-        BottomNavCoordinator.setup(this, R.id.nav_home);
+        BottomNavigationView nav = findViewById(R.id.bottom_navigation);
+        nav.setSelectedItemId(R.id.nav_home);
+        nav.setOnItemSelectedListener(menuItem -> {
+            int id = menuItem.getItemId();
+            if (id == R.id.nav_home) {
+                return true;
+            } else if (id == R.id.nav_report) {
+                startActivity(new Intent(getApplicationContext(), CommunityReportActivity.class));
+                overridePendingTransition(0, 0);
+                return true;
+            } else if (id == R.id.nav_news) {
+                startActivity(new Intent(getApplicationContext(), NewsActivity.class));
+                overridePendingTransition(0, 0);
+                return true;
+            } else if (id == R.id.nav_settings) {
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                overridePendingTransition(0, 0);
+                return true;
+            }
+            return false;
+        });
 
         Button debugBtn = findViewById(R.id.debug_btn);
         if (debugBtn != null) {
@@ -107,12 +127,28 @@ public class MainActivity extends SharedActivity {
 
         TextView infoText = findViewById(R.id.information_text);
         TextView totalCount = findViewById(R.id.total_counter);
+        TextView lastScanText = findViewById(R.id.lastScanText);
 
         if (infoText != null) {
             infoText.setText("Welcome to Smishing Detection! Your real-time tool to deter and detect smishing attacks.\nYour app is ready to smish.");
         }
         if (totalCount != null) {
             totalCount.setText(String.valueOf(databaseAccess.getCounter()));
+        }
+
+        // Save and show last scan time
+        if (lastScanText != null) {
+            android.content.SharedPreferences prefs2 = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+            String lastScan = prefs2.getString("last_scan_time", null);
+            if (lastScan == null) {
+                lastScanText.setText("Last scanned: Never");
+            } else {
+                lastScanText.setText("Last scanned: " + lastScan);
+            }
+            // Save current time as last scan time
+            String now = new java.text.SimpleDateFormat("dd MMM yyyy, HH:mm", java.util.Locale.getDefault())
+                    .format(new java.util.Date());
+            prefs2.edit().putString("last_scan_time", now).apply();
         }
 
         databaseAccess.close();
