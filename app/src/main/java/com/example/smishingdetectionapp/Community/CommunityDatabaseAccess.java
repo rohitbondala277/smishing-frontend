@@ -240,6 +240,23 @@ public class CommunityDatabaseAccess {
         cursor.close();
     }
 
+    // Get report count for a specific phone number
+    public int getReportCount(String number) {
+        Cursor cursor = database.query(
+                CommunityDatabase.TABLE_REPORTS,
+                new String[]{CommunityDatabase.COL_REPORT_COUNT},
+                CommunityDatabase.COL_REPORTED_NUMBER + "=?",
+                new String[]{number},
+                null, null, null
+        );
+        int count = 0;
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        cursor.close();
+        return count;
+    }
+
     // Get top reported numbers based on count
     public List<CommunityReportedNumber> getTopReportedDetails(int limit) {
         List<CommunityReportedNumber> list = new ArrayList<>();

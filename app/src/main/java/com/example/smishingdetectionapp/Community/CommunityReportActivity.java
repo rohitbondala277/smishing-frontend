@@ -44,10 +44,7 @@ public class CommunityReportActivity extends AppCompatActivity {
         // Set up category spinner
         String[] categories = {"Smishing", "Phishing", "Spam", "Scam Call", "Other"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_item,
-                categories
-        );
+                this, android.R.layout.simple_spinner_item, categories);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategory.setAdapter(adapter);
         spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -131,15 +128,32 @@ public class CommunityReportActivity extends AppCompatActivity {
             } else {
                 CommunityDatabaseAccess dbAccess = new CommunityDatabaseAccess(this);
                 dbAccess.open();
-                dbAccess.insertOrUpdateReport(phone, msg);
-                dbAccess.close();
 
-                Toast.makeText(this,
-                        "Report submitted as \"" + selectedCategory + "\". Thank you!",
-                        Toast.LENGTH_LONG).show();
-                etPhone.setText("");
-                etMessage.setText("");
-                spinnerCategory.setSelection(0);
+                int existingCount = dbAccess.getReportCount(phone);
+
+                if (existingCount > 0) {
+                    // Show duplicate warning dialog
+                    new androidx.appcompat.app.AlertDialog.Builder(this)
+                        .setTitle("Already Reported")
+                        .setMessage("This number has been reported " + existingCount + " time" + (existingCount == 1 ? "" : "s") + " before. Do you still want to submit?")
+                        .setPositiveButton("Yes, Submit", (dialog, which) -> {
+                            dbAccess.insertOrUpdateReport(phone, msg);
+                            dbAccess.close();
+                            Toast.makeText(this, "Report submitted as \"" + selectedCategory + "\". Thank you!", Toast.LENGTH_LONG).show();
+                            etPhone.setText("");
+                            etMessage.setText("");
+                            spinnerCategory.setSelection(0);
+                        })
+                        .setNegativeButton("Cancel", (dialog, which) -> dbAccess.close())
+                        .show();
+                } else {
+                    dbAccess.insertOrUpdateReport(phone, msg);
+                    dbAccess.close();
+                    Toast.makeText(this, "Report submitted as \"" + selectedCategory + "\". Thank you!", Toast.LENGTH_LONG).show();
+                    etPhone.setText("");
+                    etMessage.setText("");
+                    spinnerCategory.setSelection(0);
+                }
             }
         });
     }
